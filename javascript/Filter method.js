@@ -1,7 +1,7 @@
 // Return a new array with no negative numbers
 
-let original_array = [1,-5,10,4,-3,6,-67]
-let new_array = original_array.filter(element => element > 0)
+let original_array = [1,-5,10,4,-3,6,-67, 0]
+let new_array = original_array.filter(element => element >= 0)
 console.log(new_array)
 console.log(original_array)
 
