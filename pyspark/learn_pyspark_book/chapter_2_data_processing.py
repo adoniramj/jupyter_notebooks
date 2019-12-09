@@ -137,7 +137,7 @@ df_na.fillna({'country': 'USA', 'browser': 'Safari'}).show()
 df_na.na.drop().show()
 
 
-# ### Drop all rows where the country column is null.
+# ### Drop all rows where the country column is null
 
 # In[15]:
 
@@ -145,7 +145,7 @@ df_na.na.drop().show()
 df_na.na.drop(subset='country').show()
 
 
-# ### Replace a specific value with another value.
+# ### Replace a specific value with another value
 
 # In[16]:
 
@@ -153,12 +153,95 @@ df_na.na.drop(subset='country').show()
 df_na.replace('Chrome','Google Chrome').show()
 
 
-# ### Drop the user_id column.
+# ### Drop the user_id column
 
 # In[17]:
 
 
 df_na.drop('user_id').show()
+
+
+# ## Import a csv file and manipulate its data
+
+# In[23]:
+
+
+df=spark.read.csv('customer_data.csv'                  ,header=True                  ,inferSchema=True)
+# customer_data.csv is in the location as this notebook.
+
+
+# In[19]:
+
+
+# Verify the file was loaded by counting the number of rows.
+df.count()
+
+
+# In[20]:
+
+
+# Count the number of columns.
+len(df.columns)
+
+
+# In[22]:
+
+
+# Print the schema of df.
+df.printSchema()
+
+
+# In[25]:
+
+
+# Show the first 50 rows.
+df.show(50)
+
+
+# In[26]:
+
+
+df.summary().show()
+
+
+# ### Working with a subset of a dataframe
+
+# In[27]:
+
+
+# Select statement
+df.select(['Customer_subtype', 'Avg_Salary']).show()
+
+
+# ### Filter data using the filter function
+
+# In[28]:
+
+
+# Filter data using a single condition
+df.filter(df['Avg_Salary'] > 1000000).count()
+
+
+# In[35]:
+
+
+# Show the filtered data
+df.filter(df['Avg_Salary'] > 1000000).show()
+
+
+# In[36]:
+
+
+# Composite filter
+df.filter(df['Avg_Salary'] > 500000).filter(df['Number_of_houses'] > 2).show()
+
+
+# ### Filter data using the where clause
+
+# In[39]:
+
+
+df.where(          (df['Avg_Salary'] > 500000)          &          (df['Number_of_houses'] > 2)         ).show()
 
 
 # In[ ]:
