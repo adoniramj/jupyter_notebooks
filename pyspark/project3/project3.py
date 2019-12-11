@@ -143,7 +143,7 @@ df_summary.filter(df_summary.Avg_Growth.isNull()).select(['Country_name']).show(
 # In[17]:
 
 
-df_summary.filter(df_summarydesc("count").Avg_Growth.isNull()).count()
+df_summary.filter(df_summary.Avg_Growth.isNull()).count()
 
 
 # ## Use the where clause to show all the records that have a non-null average growth rate.
@@ -201,8 +201,18 @@ df_non_null_data.groupBy('IncomeGroup').agg(F.mean('Avg_Growth')).show(truncate=
 df_non_null_data.groupBy('Region', 'IncomeGroup').agg(F.mean('Avg_Growth')).sort('Region').show(truncate=False)
 
 
-# In[ ]:
+# ## Collect set
+
+# In[26]:
 
 
+df_non_null_data.groupBy('Region').agg(F.collect_set('IncomeGroup')).show(truncate=False)
 
+
+# ## Collect list
+
+# In[25]:
+
+
+df_non_null_data.groupBy('Region').agg(F.collect_list('IncomeGroup')).show(truncate=False)
 
