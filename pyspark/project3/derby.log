@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Wed Dec 11 15:56:31 EST 2019:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-016e-f6bf-be4b-0000087adf90 
+on database directory /home/josue/Dropbox/programming/jupyter_notebooks/pyspark/project3/metastore_db with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@14dad5dc 
+Loaded from file:/home/josue/spark-3.0.0-preview-bin-hadoop3.2/jars/derby-10.12.1.1.jar
+java.vendor=Ubuntu
+java.runtime.version=11.0.4+11-post-Ubuntu-1ubuntu218.04.3
+user.dir=/home/josue/Dropbox/programming/jupyter_notebooks/pyspark/project3
+os.name=Linux
+os.arch=amd64
+os.version=4.15.0-72-generic
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''

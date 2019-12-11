@@ -40,32 +40,25 @@ df_data.count()
 
 
 # Verify schema of df_data
-# df_data.printSchema()
-
-
-# In[7]:
-
-
-# df_data.fillna('0').show()
-#df_data.na.drop().show()
+df_data.printSchema()
 
 
 # ## Import country_codes.csv
 
-# In[8]:
+# In[7]:
 
 
 df_countries=spark.read.csv('country_codes.csv'                            ,header=True                            ,inferSchema=True)
 
 
-# In[9]:
+# In[8]:
 
 
 # Verify country_codes.csv was imported
 df_countries.count()
 
 
-# In[10]:
+# In[9]:
 
 
 # Verify schema of df_countries
@@ -74,13 +67,13 @@ df_countries.printSchema()
 
 # ## Join df_data and df_countries
 
-# In[11]:
+# In[10]:
 
 
 df_combined=df_data.join(df_countries,on='Country_Code')
 
 
-# In[12]:
+# In[11]:
 
 
 df_combined.printSchema()
@@ -88,7 +81,7 @@ df_combined.printSchema()
 
 # ## Total number of records
 
-# In[13]:
+# In[12]:
 
 
 df_combined.count()
@@ -96,7 +89,7 @@ df_combined.count()
 
 # ## Using UDF to calculate the average growth per record
 
-# In[16]:
+# In[13]:
 
 
 from pyspark.sql.functions import col
@@ -105,43 +98,107 @@ marksColumns = [col('1960'), col('1961'),col('1962'),col('1963'),col('1964'),col
 
 averageFunc = sum(x for x in marksColumns)/len(marksColumns)
 
+# add Avg_Growth to dataframe
 df_average=df_combined.withColumn('Avg_Growth', averageFunc)
+
+
+# ## Create a new dataframe
+#     - Country_name
+#     - Country_Code,
+#     - Region,
+#     - IncomeGroup,
+#     - Avg_Growth
+
+# In[14]:
+
+
+spark.catalog.dropTempView("df_temp")
+df_average.createOrReplaceTempView('df_temp')
+query='''
+        select 
+            Country_name,
+            Country_code,
+            region,
+            IncomeGroup,
+            Avg_Growth
+        from df_temp '''
+
+df_summary=spark.sql(query)
+
+
+# In[15]:
+
+
+df_summary.show(df_summary.count())
+
+
+# ## Use the filter function to show the records that have a null average growth.
+
+# In[16]:
+
+
+df_summary.filter(df_summary.Avg_Growth.isNull()).select(['Country_name']).show(df_summary.count())
 
 
 # In[17]:
 
 
-df_average.select(['Country_name','Country_Code','Region','IncomeGroup','Avg_Growth']).show(df_average.count())
-
-
-# ## Use the filter function to show the records that have a null average growth.
-
-# In[18]:
-
-
-df_average.filter(df_average.Avg_Growth.isNull()).select(['Country_name']).show(df_average.count())
-
-
-# ## Use the filter function to determine the amount of records that have a null average growth.
-
-# In[19]:
-
-
-df_average.filter(df_average.Avg_Growth.isNull()).count()
+df_summary.filter(df_summarydesc("count").Avg_Growth.isNull()).count()
 
 
 # ## Use the where clause to show all the records that have a non-null average growth rate.
 
+# In[18]:
+
+
+df_summary.where(df_summary.Avg_Growth.isNotNull()).select(['Country_name']).show(df_summary.count())
+
+
+# In[19]:
+
+
+df_summary.where(df_summary.Avg_Growth.isNotNull()).count()
+
+
+# ## Aggregation
+# 
+# Remove data with null values in avg_growth before using aggregation
+
 # In[20]:
 
 
-df_average.where(df_average.Avg_Growth.isNotNull()).select(['Country_name']).show(df_average.count())
+spark.catalog.dropTempView("df_temp")
+df_summary.createOrReplaceTempView('df_temp')
+query='''
+        select 
+            Country_name,
+            Country_code,
+            region,
+            IncomeGroup,
+            Avg_Growth
+        from df_temp 
+        where Avg_Growth IS NOT NULL'''
+
+df_non_null_data=spark.sql(query)
 
 
 # In[21]:
 
 
-df_average.where(df_average.Avg_Growth.isNotNull()).count()
+df_non_null_data.groupBy('Region').agg(F.mean('Avg_Growth')).show(truncate=False)
+
+
+# In[22]:
+
+
+df_non_null_data.groupBy('IncomeGroup').agg(F.mean('Avg_Growth')).show(truncate=False)
+
+
+# In[23]:
+
+
+#from pyspark.sql.functions import desc
+df_non_null_data.groupBy('Region', 'IncomeGroup').agg(F.mean('Avg_Growth')).sort('Region').show(truncate=False)
 
 
 # In[ ]:
